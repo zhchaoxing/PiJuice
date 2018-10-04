@@ -24,7 +24,6 @@ from distutils.core import setup
 from distutils.command.install_data import install_data
 from distutils.dep_util import newer
 from distutils.log import info
-#from setuptools import setup
 import glob
 import os
 import sys
@@ -90,12 +89,8 @@ else:
     py_modules = None
     data_files= [
         ('share/applications', ['data/pijuice-gui.desktop']),
-        ('/etc/xdg/autostart', ['data/pijuice-tray.desktop']),#(os.environ['XDG_CONFIG_DIRS'] + '/autostart', ['data/pijuice-tray.desktop']),
-        ('share/pijuice/data/images', glob.glob('data/images/*')), 
-        # ('share/pijuice/data/firmware', glob.glob('data/firmware/*')),
-        #('/var/lib/pijuice', ['data/pijuice_config.JSON']),
-        #('/etc/systemd/user', ['data/pijuice.service']),
-        #('share/pijuice/src', glob.glob('src/*.py')),
+        ('/etc/xdg/autostart', ['data/pijuice-tray.desktop']),
+        ('share/pijuice/data/images', glob.glob('data/images/*'))
     ]
     scripts = ['src/pijuice_tray.py', 'src/pijuice_gui.py']
     description = "GUI package for PiJuice"
@@ -115,10 +110,5 @@ setup(
     license='GPL v2',
     py_modules=py_modules,
     data_files=data_files,
-    scripts=scripts,
-    #entry_points = {
-        #'gui_scripts' : ['pijuice_gui = pijuice_gui:main'],
-        #'console_scripts' : ['pijuicetest = pijuicetest']
-    #},
-    #cmdclass={'install_data': InstallData}
+    scripts=scripts
     )

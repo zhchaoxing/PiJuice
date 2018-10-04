@@ -50,7 +50,6 @@ def _SystemHalt(event):
 
 def ExecuteFunc(func, event, param):
     if func == 'SYS_FUNC_HALT':
-        #logger.info(func+' '+str(event)+' '+str(param))
         _SystemHalt(event)
 
     elif func == 'SYS_FUNC_HALT_POW_OFF':
@@ -71,7 +70,6 @@ def ExecuteFunc(func, event, param):
                     param=str(param)
                 )
             )
-            #subprocess.call([configData['user_functions'][func], event, param])
         except:
             print('failed to execute user func')
 
@@ -149,7 +147,6 @@ def _EvalFaultFlags():
         faults = faults['data']
         for f in (pijuice.status.faultEvents + pijuice.status.faults):
             if f in faults:
-                #logger.info('fault:' + f)
                 if sysEvEn and (f in configData['system_events']) and ('enabled' in configData['system_events'][f]) and configData['system_events'][f]['enabled']:
                     if configData['system_events'][f]['function'] != 'USER_EVENT':
                         pijuice.status.ResetFaultFlags([f])

@@ -445,7 +445,6 @@ class PiJuiceHATConfig(object):
         if q == 'yes':
             status = pijuice.config.SetAddress(id+1, self.slaveAddr[id].get())
             if status['error'] != 'NO_ERROR':
-                #self.slaveAddr[id].set(status['error'])
                 MessageBox.showerror('Address update', status['error'], parent=self.frame)
             else:
                 MessageBox.showinfo('Address update', "Success!", parent=self.frame)
@@ -600,7 +599,6 @@ class PiJuiceButtonsConfig(object):
     def ReadConfig(self, bind):
         config = pijuice.config.GetButtonConfiguration(pijuice.config.buttons[bind])
         for j in range(0, len(pijuice.config.buttonEvents)):
-            # r = bind * (len(pijuice.config.buttonEvents) + 1) + j + 1
             ind = bind * len(pijuice.config.buttonEvents) + j
             if config['error'] == 'NO_ERROR':
                 try:
@@ -779,7 +777,6 @@ class PiJuiceBatteryConfig(object):
         self.customCheck = IntVar()
         self.checkbutton = Checkbutton(self.frame, text = "Custom", variable = self.customCheck).grid(row=1, column=1, sticky = W, pady=(0, 2))
         self.customCheck.trace("w", self._CustomCheckEvent)
-        #self.checkbutton.select()
 
         Label(self.frame, text="Profile:").grid(row=0, column=0, sticky = W, pady=(8, 4))
         self.prfStatus = StringVar()
@@ -883,11 +880,8 @@ class PiJuiceBatteryConfig(object):
         self.ReadProfileData()
         self._CustomEditEnable(self.customCheck.get())
         if self.customCheck.get():
-            #self.profileSel.set('')
             self.profileSel.configure(state='disabled')
         else:
-            #self._ClearProfileEditParams()
-            #self.ReadProfileStatus()
             self.profileSel.configure(state='readonly')
         self.applyBtn.configure(state="disabled")
 
@@ -946,7 +940,6 @@ class PiJuiceBatteryConfig(object):
             self.status = status['data']
             if self.status['validity'] == 'VALID':
                 if self.status['origin'] == 'PREDEFINED':
-                    #self.profileSel.configure(state="readonly")
                     self.profileId = self.status['profile']
                     self.profileSel.current(pijuice.config.batteryProfiles.index(self.profileId))
                 else:
@@ -1291,7 +1284,6 @@ class PiJuiceWakeupConfig(object):
 
         Label(self.frame, text="Hour:").grid(row=4, column=0, padx=(2, 2), pady=(10, 0), sticky = W)
         self.aHour = StringVar()
-        #self.aDay.trace("w", self._ProfileEdited)
         self.aHourEntry = Entry(self.frame,textvariable=self.aHour)
         self.aHourEntry.grid(row=5, column=0, padx=(2, 2), pady=(2, 0), columnspan = 2, sticky='WE')
 
@@ -1304,13 +1296,11 @@ class PiJuiceWakeupConfig(object):
         Radiobutton(self.frame, text="Minutes period", variable=self.aMinuteOrPeriod, value=2).grid(row=6, column=1, padx=(2, 2), pady=(10, 0), sticky='WE')
 
         self.aMinute = IntVar()
-        #self.aDay.trace("w", self._ProfileEdited)
         self.aMinuteEntry = Entry(self.frame,textvariable=self.aMinute)
         self.aMinuteEntry.grid(row=7, column=0, padx=(2, 2), pady=(2, 0), columnspan = 2, sticky='WE')
 
         Label(self.frame, text="Second:").grid(row=8, column=0, padx=(2, 2), pady=(10, 0), sticky = W)
         self.aSecond = IntVar()
-        #self.aDay.trace("w", self._ProfileEdited)
         self.aSecondEntry = Entry(self.frame,textvariable=self.aSecond)
         self.aSecondEntry.grid(row=9, column=0, padx=(2, 2), pady=(2, 0), columnspan = 2, sticky='WE')
 
@@ -1324,9 +1314,6 @@ class PiJuiceWakeupConfig(object):
 
         self.status = StringVar()
         self.statusLbl = Label(self.frame, textvariable=self.status).grid(row=10, column=2, padx=(4, 2), pady=(6, 0), sticky = 'W')
-
-        #print pijuice.rtcAlarm.SetAlarm({'second':10, 'minute':45, 'hour':'11PM', 'day':'2'})
-        #print pijuice.rtcAlarm.SetAlarm({}) #disable alarm
 
         ctr = pijuice.rtcAlarm.GetControlStatus()
         if ctr['error'] == 'NO_ERROR':
@@ -1466,7 +1453,7 @@ class PiJuiceSysEventConfig(object):
             funcConfig = StringVar()
             self.funcConfigs.append(funcConfig)
             self.funcConfigsSel.append(Combobox(self.frame, textvariable=self.funcConfigs[i], state='readonly', width=combobox_length))
-            self.funcConfigsSel[i]['values'] = self.sysEvents[i]['funcList']#self.eventFunctions
+            self.funcConfigsSel[i]['values'] = self.sysEvents[i]['funcList']  # self.eventFunctions
             self.funcConfigsSel[i].current(0)
             self.funcConfigsSel[i].grid(column=1, row=1+i, padx=(5, 5), pady=(0, 5), sticky = W+E)
 
@@ -1474,13 +1461,11 @@ class PiJuiceSysEventConfig(object):
                 if 'enabled' in pijuiceConfigData['system_events'][self.sysEvents[i]['id']]:
                     if pijuiceConfigData['system_events'][self.sysEvents[i]['id']]['enabled'] != True:
                         self.sysEventEnable[i].set(False)
-                        #self.paramsEntry[i].configure(state="disabled")
                         self.funcConfigsSel[i].configure(state="disabled")
                     else:
                         self.sysEventEnable[i].set(True)
                 else:
                     self.sysEventEnable[i].set(False)
-                    #self.paramsEntry[i].configure(state="disabled")
                     self.funcConfigsSel[i].configure(state="disabled")
                 if 'function' in pijuiceConfigData['system_events'][self.sysEvents[i]['id']]:
                     self.funcConfigsSel[i].current(self.sysEvents[i]['funcList'].index(pijuiceConfigData['system_events'][self.sysEvents[i]['id']]['function']))
@@ -1529,7 +1514,6 @@ class PiJuiceConfigParamEdit(object):
         self.min = min
         self.max = max
         self.type = type
-        #Label(self.frame, text="Watchdog").grid(row=1, column=0, padx=(2, 2), pady=(20, 0), sticky = W)
         Label(self.frame, text=paramDes).grid(row=r, column=1, padx=(2, 2), pady=(8, 0), sticky = W)
         self.paramEnable = IntVar()
         self.paramEnableCheck = Checkbutton(self.frame, text = name, variable = self.paramEnable).grid(row=r+1, column=0, sticky = W, padx=(2, 2), pady=(2, 0))
@@ -1624,7 +1608,6 @@ class PiJuiceHatTab(object):
         self.frame.grid(row=0, column=0, sticky=W)
         self.frame.rowconfigure(10, weight=1)
         self.frame.columnconfigure(0, minsize=150)
-        # self.frame.columnconfigure((1, 3), weight=1, uniform=1)
 
         if pijuice == None:
             return
