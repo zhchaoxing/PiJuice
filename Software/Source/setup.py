@@ -24,6 +24,7 @@ from distutils.core import setup
 from distutils.command.install_data import install_data
 from distutils.dep_util import newer
 from distutils.log import info
+import fileinput
 import glob
 import os
 import sys
@@ -65,15 +66,12 @@ class InstallData(install_data):
 
 def set_desktop_entry_versions(version):
     entries = ("data/pijuice-gui.desktop", "data/pijuice-tray.desktop")
-    for entry in entries:
-        with open(entry, "r") as f:
-            lines = f.readlines()
-        for i in range(len(lines)):
-            if lines[i].startswith("Version="):
-                break
-        lines[i] = "Version=" + version + "\n"
-        with open(entry, "w") as f:
-            f.writelines(lines)
+
+    for line in fileinput.input(files=entries, inplace=True):
+        if line.startswith("Version="):
+            print("Version={}".format(version))
+        else:
+            print(line, end="")
 
 
 version = os.environ.get('PIJUICE_VERSION')
