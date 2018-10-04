@@ -8,13 +8,11 @@ import datetime
 import json
 import os
 import re
-import signal
 from subprocess import Popen, PIPE
 from threading import Thread
 import fcntl
 import sys
 import time
-from signal import SIGUSR1, SIGUSR2
 
 py3 = sys.version_info > (3, 0)
 

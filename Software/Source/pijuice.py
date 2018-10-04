@@ -2,15 +2,10 @@
 from __future__ import division, print_function
 __version__ = "1.3.3"
 
-import calendar
 import ctypes
-import datetime
-import getopt
-import struct
 import sys
 import threading
 import time
-from fcntl import ioctl
 
 from smbus import SMBus
 

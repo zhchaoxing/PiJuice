@@ -2,11 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import calendar
-import datetime
-import getopt
 import json
-import logging
 import os
 import signal
 import subprocess

@@ -5,8 +5,6 @@ from __future__ import print_function, division
 import os
 import os.path
 import sys
-from time import sleep
-from glob import glob
 from multiprocessing import Process
 from signal import signal, SIGUSR1, SIGUSR2
 
