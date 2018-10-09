@@ -74,7 +74,7 @@ class PiJuiceInterface(object):
             self.errTime = time.time()
 
     def _DoTransfer(self, oper):
-        if (self.t != None and self.t.isAlive()) or (self.comError and (time.time()-self.errTime) < 4):
+        if (self.t and self.t.isAlive()) or (self.comError and (time.time()-self.errTime) < 4):
             return False
 
         self.t = threading.Thread(target=oper, args=())
@@ -116,12 +116,12 @@ class PiJuiceInterface(object):
 
         return {'error': 'NO_ERROR'}
 
-    def WriteDataVerify(self, cmd, data, delay=None):
+    def WriteDataVerify(self, cmd, data, delay=0):
         wresult = self.WriteData(cmd, data)
         if wresult['error'] != 'NO_ERROR':
             return wresult
         else:
-            if delay != None:
+            if delay:
                 try:
                     time.sleep(delay*1)
                 except:
@@ -519,7 +519,7 @@ class PiJuiceRtcAlarm(object):
 
     def SetTime(self, dateTime):
         d = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
-        if dateTime == None or dateTime == {}:
+        if not dateTime:
             dt = {}
         else:
             dt = dateTime
@@ -728,7 +728,7 @@ class PiJuiceRtcAlarm(object):
 
     def SetAlarm(self, alarm):
         d = [0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0xFF]
-        if alarm == None or alarm == {}:
+        if not alarm:
             #disable alarm
             return self.interface.WriteDataVerify(self.RTC_ALARM_CMD, d, 0.2)
 
@@ -1117,11 +1117,12 @@ class PiJuiceConfig(object):
                 return {'error': 'UNKNOWN_DATA'}
 
     def SetBatteryTempSenseConfig(self, config):
-        ind = self.batteryTempSenseOptions.index(config)
-        if ind == None:
+        try:
+            ind = self.batteryTempSenseOptions.index(config)
+        except ValueError:
             return {'error': 'BAD_ARGUMENT'}
-        data = [ind]
-        return self.interface.WriteDataVerify(self.BATTERY_TEMP_SENSE_CONFIG_CMD, data)
+
+        return self.interface.WriteDataVerify(self.BATTERY_TEMP_SENSE_CONFIG_CMD, [ind])
 
     powerInputs = ['USB_MICRO', '5V_GPIO']
     usbMicroCurrentLimits = ['1.5A', '2.5A']
@@ -1132,14 +1133,19 @@ class PiJuiceConfig(object):
             prec = 0x01 if (config['precedence'] == '5V_GPIO') else 0x00
             gpioInEn = 0x02 if (config['gpio_in_enabled'] == True) else 0x00
             noBatOn = 0x04 if (config['no_battery_turn_on'] == True) else 0x00
-            ind = self.usbMicroCurrentLimits.index(config['usb_micro_current_limit'])
-            if ind == None:
+
+            try:
+                ind = self.usbMicroCurrentLimits.index(config['usb_micro_current_limit'])
+            except ValueError:
                 return {'error': 'INVALID_USB_MICRO_CURRENT_LIMIT'}
+
             usbMicroLimit = int(ind) << 3
 
-            ind = self.usbMicroDPMs.index(config['usb_micro_dpm'])
-            if ind == None:
+            try:
+                ind = self.usbMicroDPMs.index(config['usb_micro_dpm'])
+            except:
                 return {'error': 'INVALID_USB_MICRO_DPM'}
+
             dpm = (int(ind) & 0x07) << 4
             d = [nv | prec | gpioInEn | noBatOn | usbMicroLimit | dpm]
         except:
