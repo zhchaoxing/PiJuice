@@ -461,12 +461,12 @@ class PiJuiceRtcAlarm(object):
             return ret
         d = ret['data']
         if (d[0] & 0x01) and (d[0] & 0x04):
-            if status == True:
+            if status:
                 return {'error': 'NO_ERROR'}
             else:
                 d[0] = d[0] & 0xFE
         else:
-            if status == False:
+            if not status:
                 return {'error': 'NO_ERROR'}
             else:
                 d[0] = d[0] | 0x01 | 0x04
@@ -626,7 +626,7 @@ class PiJuiceRtcAlarm(object):
             elif dt['daylightsaving'] == 'SUB1H':
                 d[8] |= 1
 
-        if 'storeoperation' in dt and dt['storeoperation'] == True:
+        if dt.get('storeoperation'):
             d[8] |= 0x04
 
         ret = self.interface.WriteData(self.RTC_TIME_CMD, d)
@@ -996,18 +996,13 @@ class PiJuiceConfig(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         return False  # Don't suppress exceptions.
 
-    def SetChargingConfig(self, config, non_volatile = False):
-        try:
-            nv = 0x80 if non_volatile == True else 0x00
-            if config['charging_enabled'] == True:
-                chEn = 0x01
-            elif config['charging_enabled'] == False:
-                chEn = 0x00
-            else:
-                return {'error': 'BAD_ARGUMENT'}
-        except:
+    def SetChargingConfig(self, config, non_volatile=False):
+        nv = 0x80 if non_volatile else 0x00
+
+        if not isinstance(config['charging_enabled'], bool):
             return {'error': 'BAD_ARGUMENT'}
-        d = [nv | chEn]
+
+        d = [nv | int(config['charging_enabled'])]
         return self.interface.WriteDataVerify(self.CHARGING_CONFIG_CMD, d)
     
     def GetChargingConfig(self):  
@@ -1124,10 +1119,10 @@ class PiJuiceConfig(object):
     usbMicroDPMs = list("{0:.2f}".format(4.2+0.08*x)+'V' for x in range(0, 8))
     def SetPowerInputsConfig(self, config, non_volatile=False):
         try:
-            nv = 0x80 if non_volatile == True else 0x00
+            nv = 0x80 if non_volatile else 0x00
             prec = 0x01 if (config['precedence'] == '5V_GPIO') else 0x00
-            gpioInEn = 0x02 if (config['gpio_in_enabled'] == True) else 0x00
-            noBatOn = 0x04 if (config['no_battery_turn_on'] == True) else 0x00
+            gpioInEn = 0x02 if config['gpio_in_enabled'] else 0x00
+            noBatOn = 0x04 if config['no_battery_turn_on'] else 0x00
 
             try:
                 ind = self.usbMicroCurrentLimits.index(config['usb_micro_current_limit'])
@@ -1318,7 +1313,7 @@ class PiJuiceConfig(object):
         try:
             mode = self.ioModes.index(config['mode'])
             pull = self.ioPullOptions.index(config['pull'])
-            nv = 0x80 if non_volatile == True else 0x00
+            nv = 0x80 if non_volatile else 0x00
             d[0] = (mode & 0x0F) | ((pull & 0x03) << 4) | nv
 
             if config['mode'] == 'DIGITAL_OUT_PUSHPULL' or config['mode'] == 'DIGITAL_IO_OPEN_DRAIN':
@@ -1392,13 +1387,10 @@ class PiJuiceConfig(object):
             return {'data': status, 'error': 'NO_ERROR'}
 
     def SetIdEepromWriteProtect(self, status):
-        if status == True:
-            d = 1
-        elif status == False:
-            d = 0
-        else:
+        if not isinstance(status, bool):
             return {'error': 'BAD_ARGUMENT'}
-        return self.interface.WriteDataVerify(self.ID_EEPROM_WRITE_PROTECT_CTRL_CMD, [d])
+
+        return self.interface.WriteDataVerify(self.ID_EEPROM_WRITE_PROTECT_CTRL_CMD, [int(status)])
 
     idEepromAddresses = ['50', '52']
     def GetIdEepromAddress(self):
