@@ -1010,8 +1010,9 @@ class PiJuiceConfig(object):
         if ret['error'] != 'NO_ERROR':
             return ret
         else:
-            return {'data': {'charging_enabled' :bool(ret['data'][0] & 0x01)},
-                    'non_volatile':bool(ret['data'][0]&0x80), 'error':'NO_ERROR'}
+            return {'data': {'charging_enabled': bool(ret['data'][0] & 0x01)},
+                    'non_volatile': bool(ret['data'][0] & 0x80),
+                    'error': 'NO_ERROR'}
 
     batteryProfiles = ['BP6X', 'BP7X', 'SNN5843', 'LIPO8047109']
     def SetBatteryProfile(self, profile):
